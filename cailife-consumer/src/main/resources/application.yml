@@ -1,0 +1,33 @@
+server: 
+  port: 8081
+
+#默认使用配置
+spring:
+  profiles:
+    active: dev
+    
+---
+
+#开发配置
+spring:
+  profiles: dev
+  
+  dubbo:
+    registry:               # 应用注册中心配置项
+      protocol: zookeeper   # 必填 服务发现 注册中心支持的协议 包括 dubbo,multicast,zookeeper,redis 默认是zookeeper
+      address: 127.0.0.1    # 必填 服务发现 注册中心服务器地址，如果地址没有端口缺省为9090，同一集群内的多个地址用逗号分隔，如：ip:port,ip:port，不同集群的注册中心，请配置多个spring.dubbo.registry.标签 1.0.16以上版本
+      port: 2181
+    base-package: com.cailife.consumer
+    application:
+      name: consumer
+    protocol:               # 默认的应用协议栈
+      name: dubbo           # 必填 性能调优 协议名称 2.0.5以上版本
+      serialization: hessian2
+    
+  thymeleaf:
+      cache: true
+      prefix: classpath:/templates/
+      suffix: .html
+      mode: HTML
+      encoding: UTF-8
+      content-type: text/html

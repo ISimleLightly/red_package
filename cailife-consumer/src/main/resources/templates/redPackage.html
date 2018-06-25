@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>RedPackage</title>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <a href="javascript:grab();">测试红包</a>
+    </div>
+<script type="text/javascript">
+	function grab() {
+		for(var i = 0; i < 30000; i ++) {
+	        $.ajax({
+	            url: "http://localhost:8081/redPackage/grab",
+	            type: "post",
+	            dataType: "json",
+	            data: {
+	                "redPackageId": "dafecd3e-c963-4734-8e49-be99559d7178",
+	                "userId": i
+	            }
+	        })
+	    }
+	}
+</script>
+</body>
+</html>
