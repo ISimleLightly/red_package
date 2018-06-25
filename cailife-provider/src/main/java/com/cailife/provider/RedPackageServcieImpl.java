@@ -84,6 +84,7 @@ public class RedPackageServcieImpl implements RedPackageService {
 	
 	@SuppressWarnings("rawtypes")
 	private void saveUserPackageFromRedis(String redPackageId, Double unitMoney) throws Exception {
+		long start = System.currentTimeMillis();
 		final int TIME_SIZE = 1000;
 		BoundListOperations ops = redisTemplate.boundListOps("redPackageList_" + redPackageId);
 		Long size = ops.size();
@@ -110,6 +111,7 @@ public class RedPackageServcieImpl implements RedPackageService {
 			}
 			count += userRedPackageMapper.batchInsertUserRedPack(userRedPackList);
 		}
+		long end = System.currentTimeMillis();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -128,9 +130,7 @@ public class RedPackageServcieImpl implements RedPackageService {
 		List<String> keys = new ArrayList<>();
 		keys.add(redPackageId);
 		try {
-			DefaultRedisScript<String> defaultRedisScript = new DefaultRedisScript<>(script);
-			defaultRedisScript.setScriptText(script);
-			defaultRedisScript.setResultType(String.class);
+			DefaultRedisScript<Long> defaultRedisScript = new DefaultRedisScript<>(script,Long.class);
 			Long result = (Long) redisTemplate.execute(defaultRedisScript, keys, arg);
 			if (result == 2) {
 				Double unitMoney = (Double) redisTemplate.opsForHash().get("redPackage_" + redPackageId, "unitMoney");
