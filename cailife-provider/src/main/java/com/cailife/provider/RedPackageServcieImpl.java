@@ -111,6 +111,10 @@ public class RedPackageServcieImpl implements RedPackageService {
 			}
 			count += userRedPackageMapper.batchInsertUserRedPack(userRedPackList);
 		}
+		RedPackage redPackage = new RedPackage();
+		redPackage.setId(redPackageId);
+		redPackage.setStock((int) redisTemplate.opsForHash().get("redPackage_" + redPackageId, "stock"));
+		redPackageMapper.updateByPrimaryKeySelective(redPackage);
 		long end = System.currentTimeMillis();
 	}
 	
@@ -121,7 +125,7 @@ public class RedPackageServcieImpl implements RedPackageService {
 						"IF stock <= 0 then \n" +
 						"return 0 end \n" +
 						"stock = stock - 1 \n" +
-						"redis.call('hset','redPackage','stock',tostring(stock)) \n" + 
+						"redis.call('hset','redPackage_'..KEYS[1],'stock',tostring(stock)) \n" + 
 						"redis.call('rpush',listkey,ARGV[1]) \n" +
 						"IF stock == 0 then \n" + 
 						"return 2 end \n" +
