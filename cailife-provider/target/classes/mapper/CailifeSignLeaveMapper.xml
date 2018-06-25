@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cailife.dao.CailifeSignLeaveMapper" >
+  <resultMap id="BaseResultMap" type="com.cailife.pojo.CailifeSignLeave" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="Realname" property="realname" jdbcType="VARCHAR" />
+    <result column="leavetime" property="leavetime" jdbcType="TIMESTAMP" />
+    <result column="leaveType" property="leavetype" jdbcType="INTEGER" />
+    <result column="leavedate" property="leavedate" jdbcType="TIMESTAMP" />
+    <result column="leavetodate" property="leavetodate" jdbcType="TIMESTAMP" />
+    <result column="beizhu" property="beizhu" jdbcType="VARCHAR" />
+    <result column="familyID" property="familyid" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="familyName" property="familyname" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="dayType" property="daytype" jdbcType="VARCHAR" />
+    <result column="access_token" property="accessToken" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="extId" property="extid" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.cailife.pojo.CailifeSignLeave" extends="BaseResultMap" >
+    <result column="fujian" property="fujian" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, Realname, leavetime, leaveType, leavedate, leavetodate, beizhu, familyID, username, 
+    familyName, status, dayType, access_token, reason, extId
+  </sql>
+  <sql id="Blob_Column_List" >
+    fujian
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.cailife.pojo.CailifeSignLeaveExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from cailife_sign_leave
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.cailife.pojo.CailifeSignLeaveExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from cailife_sign_leave
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from cailife_sign_leave
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from cailife_sign_leave
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.cailife.pojo.CailifeSignLeaveExample" >
+    delete from cailife_sign_leave
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.cailife.pojo.CailifeSignLeave" >
+    insert into cailife_sign_leave (id, Realname, leavetime, 
+      leaveType, leavedate, leavetodate, 
+      beizhu, familyID, username, 
+      familyName, status, dayType, 
+      access_token, reason, extId, 
+      fujian)
+    values (#{id,jdbcType=VARCHAR}, #{realname,jdbcType=VARCHAR}, #{leavetime,jdbcType=TIMESTAMP}, 
+      #{leavetype,jdbcType=INTEGER}, #{leavedate,jdbcType=TIMESTAMP}, #{leavetodate,jdbcType=TIMESTAMP}, 
+      #{beizhu,jdbcType=VARCHAR}, #{familyid,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{familyname,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{daytype,jdbcType=VARCHAR}, 
+      #{accessToken,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR}, #{extid,jdbcType=VARCHAR}, 
+      #{fujian,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cailife.pojo.CailifeSignLeave" >
+    insert into cailife_sign_leave
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="realname != null" >
+        Realname,
+      </if>
+      <if test="leavetime != null" >
+        leavetime,
+      </if>
+      <if test="leavetype != null" >
+        leaveType,
+      </if>
+      <if test="leavedate != null" >
+        leavedate,
+      </if>
+      <if test="leavetodate != null" >
+        leavetodate,
+      </if>
+      <if test="beizhu != null" >
+        beizhu,
+      </if>
+      <if test="familyid != null" >
+        familyID,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="familyname != null" >
+        familyName,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="daytype != null" >
+        dayType,
+      </if>
+      <if test="accessToken != null" >
+        access_token,
+      </if>
+      <if test="reason != null" >
+        reason,
+      </if>
+      <if test="extid != null" >
+        extId,
+      </if>
+      <if test="fujian != null" >
+        fujian,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="realname != null" >
+        #{realname,jdbcType=VARCHAR},
+      </if>
+      <if test="leavetime != null" >
+        #{leavetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="leavetype != null" >
+        #{leavetype,jdbcType=INTEGER},
+      </if>
+      <if test="leavedate != null" >
+        #{leavedate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="leavetodate != null" >
+        #{leavetodate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beizhu != null" >
+        #{beizhu,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="familyname != null" >
+        #{familyname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="daytype != null" >
+        #{daytype,jdbcType=VARCHAR},
+      </if>
+      <if test="accessToken != null" >
+        #{accessToken,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="extid != null" >
+        #{extid,jdbcType=VARCHAR},
+      </if>
+      <if test="fujian != null" >
+        #{fujian,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.cailife.pojo.CailifeSignLeaveExample" resultType="java.lang.Integer" >
+    select count(*) from cailife_sign_leave
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update cailife_sign_leave
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.realname != null" >
+        Realname = #{record.realname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.leavetime != null" >
+        leavetime = #{record.leavetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.leavetype != null" >
+        leaveType = #{record.leavetype,jdbcType=INTEGER},
+      </if>
+      <if test="record.leavedate != null" >
+        leavedate = #{record.leavedate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.leavetodate != null" >
+        leavetodate = #{record.leavetodate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.beizhu != null" >
+        beizhu = #{record.beizhu,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyid != null" >
+        familyID = #{record.familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.familyname != null" >
+        familyName = #{record.familyname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.daytype != null" >
+        dayType = #{record.daytype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.accessToken != null" >
+        access_token = #{record.accessToken,jdbcType=VARCHAR},
+      </if>
+      <if test="record.reason != null" >
+        reason = #{record.reason,jdbcType=VARCHAR},
+      </if>
+      <if test="record.extid != null" >
+        extId = #{record.extid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fujian != null" >
+        fujian = #{record.fujian,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update cailife_sign_leave
+    set id = #{record.id,jdbcType=VARCHAR},
+      Realname = #{record.realname,jdbcType=VARCHAR},
+      leavetime = #{record.leavetime,jdbcType=TIMESTAMP},
+      leaveType = #{record.leavetype,jdbcType=INTEGER},
+      leavedate = #{record.leavedate,jdbcType=TIMESTAMP},
+      leavetodate = #{record.leavetodate,jdbcType=TIMESTAMP},
+      beizhu = #{record.beizhu,jdbcType=VARCHAR},
+      familyID = #{record.familyid,jdbcType=VARCHAR},
+      username = #{record.username,jdbcType=VARCHAR},
+      familyName = #{record.familyname,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      dayType = #{record.daytype,jdbcType=VARCHAR},
+      access_token = #{record.accessToken,jdbcType=VARCHAR},
+      reason = #{record.reason,jdbcType=VARCHAR},
+      extId = #{record.extid,jdbcType=VARCHAR},
+      fujian = #{record.fujian,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update cailife_sign_leave
+    set id = #{record.id,jdbcType=VARCHAR},
+      Realname = #{record.realname,jdbcType=VARCHAR},
+      leavetime = #{record.leavetime,jdbcType=TIMESTAMP},
+      leaveType = #{record.leavetype,jdbcType=INTEGER},
+      leavedate = #{record.leavedate,jdbcType=TIMESTAMP},
+      leavetodate = #{record.leavetodate,jdbcType=TIMESTAMP},
+      beizhu = #{record.beizhu,jdbcType=VARCHAR},
+      familyID = #{record.familyid,jdbcType=VARCHAR},
+      username = #{record.username,jdbcType=VARCHAR},
+      familyName = #{record.familyname,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=TINYINT},
+      dayType = #{record.daytype,jdbcType=VARCHAR},
+      access_token = #{record.accessToken,jdbcType=VARCHAR},
+      reason = #{record.reason,jdbcType=VARCHAR},
+      extId = #{record.extid,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cailife.pojo.CailifeSignLeave" >
+    update cailife_sign_leave
+    <set >
+      <if test="realname != null" >
+        Realname = #{realname,jdbcType=VARCHAR},
+      </if>
+      <if test="leavetime != null" >
+        leavetime = #{leavetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="leavetype != null" >
+        leaveType = #{leavetype,jdbcType=INTEGER},
+      </if>
+      <if test="leavedate != null" >
+        leavedate = #{leavedate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="leavetodate != null" >
+        leavetodate = #{leavetodate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="beizhu != null" >
+        beizhu = #{beizhu,jdbcType=VARCHAR},
+      </if>
+      <if test="familyid != null" >
+        familyID = #{familyid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="familyname != null" >
+        familyName = #{familyname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="daytype != null" >
+        dayType = #{daytype,jdbcType=VARCHAR},
+      </if>
+      <if test="accessToken != null" >
+        access_token = #{accessToken,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="extid != null" >
+        extId = #{extid,jdbcType=VARCHAR},
+      </if>
+      <if test="fujian != null" >
+        fujian = #{fujian,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cailife.pojo.CailifeSignLeave" >
+    update cailife_sign_leave
+    set Realname = #{realname,jdbcType=VARCHAR},
+      leavetime = #{leavetime,jdbcType=TIMESTAMP},
+      leaveType = #{leavetype,jdbcType=INTEGER},
+      leavedate = #{leavedate,jdbcType=TIMESTAMP},
+      leavetodate = #{leavetodate,jdbcType=TIMESTAMP},
+      beizhu = #{beizhu,jdbcType=VARCHAR},
+      familyID = #{familyid,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      familyName = #{familyname,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      dayType = #{daytype,jdbcType=VARCHAR},
+      access_token = #{accessToken,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR},
+      extId = #{extid,jdbcType=VARCHAR},
+      fujian = #{fujian,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cailife.pojo.CailifeSignLeave" >
+    update cailife_sign_leave
+    set Realname = #{realname,jdbcType=VARCHAR},
+      leavetime = #{leavetime,jdbcType=TIMESTAMP},
+      leaveType = #{leavetype,jdbcType=INTEGER},
+      leavedate = #{leavedate,jdbcType=TIMESTAMP},
+      leavetodate = #{leavetodate,jdbcType=TIMESTAMP},
+      beizhu = #{beizhu,jdbcType=VARCHAR},
+      familyID = #{familyid,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      familyName = #{familyname,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      dayType = #{daytype,jdbcType=VARCHAR},
+      access_token = #{accessToken,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR},
+      extId = #{extid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
