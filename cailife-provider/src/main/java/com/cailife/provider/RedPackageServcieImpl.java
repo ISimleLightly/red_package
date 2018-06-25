@@ -10,10 +10,14 @@ import java.util.UUID;
 
 import org.assertj.core.util.Strings.StringToAppend;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Jedis;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisPoolingClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
+import org.springframework.data.redis.core.BoundListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.dubbo.config.annotation.Service;
@@ -34,7 +38,7 @@ public class RedPackageServcieImpl implements RedPackageService {
 	private UserRedPackageMapper userRedPackageMapper;
 	
 	@Autowired
-	private StringRedisTemplate stringRedisTemplate;
+	private RedisTemplate redisTemplate;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
@@ -78,16 +82,19 @@ public class RedPackageServcieImpl implements RedPackageService {
 		return result;
 	}
 	
-	private void saveUserPackageFromRedis(String redPackageId) {
+	@SuppressWarnings("rawtypes")
+	private void saveUserPackageFromRedis(String redPackageId, Double unitMoney) throws Exception {
 		final int TIME_SIZE = 1000;
-		Long size = stringRedisTemplate.boundListOps("redPackageList_" + redPackageId).size();
+		BoundListOperations ops = redisTemplate.boundListOps("redPackageList_" + redPackageId);
+		Long size = ops.size();
+		int count = 0;
 		long times = size % TIME_SIZE == 0 ? size / TIME_SIZE : size / TIME_SIZE + 1;
 		List<String> redPackageList = null;
 		for (long i = 0; i < times; i ++) {
 			if (i == 0) {
-				redPackageList = stringRedisTemplate.boundListOps("redPackageList_" + redPackageId).range(0, size);
+				redPackageList = ops.range(0, size);
 			} else {
-				redPackageList = stringRedisTemplate.boundListOps("redPackageList_" + redPackageId).range(TIME_SIZE * i + 1, TIME_SIZE * (i + 1));
+				redPackageList = ops.range(TIME_SIZE * i + 1, TIME_SIZE * (i + 1));
 			}
 			List<UserRedPackage> userRedPackList = new ArrayList<>();
 			for (String redPackage : redPackageList) {
@@ -98,25 +105,40 @@ public class RedPackageServcieImpl implements RedPackageService {
 				Timestamp ts = new Timestamp(Long.parseLong(args[1]));
 				userRedPackage.setGrabTime(ts);
 				userRedPackage.setRedPackageId(redPackageId);
-				userRedPackage.setGrabMoney((Double) stringRedisTemplate.opsForHash().get("redPackage", "unitMoney"));
+				userRedPackage.setGrabMoney(unitMoney);
 				userRedPackList.add(userRedPackage);
 			}
-			userRedPackageMapper.batchInsertUserRedPack(userRedPackList);
+			count += userRedPackageMapper.batchInsertUserRedPack(userRedPackList);
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Map grabRedPackageByRedis(String redPackageId, String userId) {
-		String script = "local listkey = redPackageList_KEYS[1]\n" + 
-						"local stock = tonumber(reids.call('hget','redPackage','stock',KEYS[1]))\n" + 
-						"local unitMoney = reids.call('hget','redPackage','unitMoney',KEYS[1])\n" +
-						"IF stock <= 0 then\n" +
-						"return 0\n" +
-						"stock = stock - 1\n" +
-						"redis.call('hset','redPackage','stock',stock)\n" + 
-						"redis.call('rpush',listkey,ARGV[1])\n" +
-						"IF stock == 0 then\n" + 
-						"return 2";
-		RedisConnection connection = stringRedisTemplate.getConnectionFactory().getConnection();
+		String script = "local listkey = 'redPackageList_'..KEYS[1] \n" + 
+						"local stock = tonumber(reids.call('hget','redPackage_'..KEYS[1],'stock')) \n" + 
+						"IF stock <= 0 then \n" +
+						"return 0 end \n" +
+						"stock = stock - 1 \n" +
+						"redis.call('hset','redPackage','stock',tostring(stock)) \n" + 
+						"redis.call('rpush',listkey,ARGV[1]) \n" +
+						"IF stock == 0 then \n" + 
+						"return 2 end \n" +
+						"return 1 \n";
+		String arg = userId + "-" + System.currentTimeMillis();
+		List<String> keys = new ArrayList<>();
+		keys.add(redPackageId);
+		try {
+			DefaultRedisScript<String> defaultRedisScript = new DefaultRedisScript<>(script);
+			defaultRedisScript.setScriptText(script);
+			defaultRedisScript.setResultType(String.class);
+			Long result = (Long) redisTemplate.execute(defaultRedisScript, keys, arg);
+			if (result == 2) {
+				Double unitMoney = (Double) redisTemplate.opsForHash().get("redPackage_" + redPackageId, "unitMoney");
+				saveUserPackageFromRedis(redPackageId, unitMoney);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
