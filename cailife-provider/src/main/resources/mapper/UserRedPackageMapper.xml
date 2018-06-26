@@ -210,8 +210,8 @@
   </update>
   
   <!-- 批量插入用户抢红包记录 -->
-  <insert id="batchInsertUserRedPack" parameterType="List">
-      insert into user_red_package (id, userId, red_package_id, grab_time, grab_money) values 
+  <insert id="batchInsertUserRedPack">
+      insert into user_red_package (id, user_id, red_package_id, grab_time, grab_money) values 
       <foreach collection="userRedPackList" item="userRedPack" index="index" separator=",">
         (
             #{userRedPack.id}, #{userRedPack.userId}, #{userRedPack.redPackageId}, #{userRedPack.grabTime}, #{userRedPack.grabMoney}

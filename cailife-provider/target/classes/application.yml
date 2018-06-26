@@ -40,6 +40,10 @@ spring:
     protocol:               # 默认的应用协议栈
       name: dubbo           # 必填 性能调优 协议名称 2.0.5以上版本
       serialization: hessian2
+    provider: 
+      timeout: 1200000
+      threadpool: fixed       # 可选 性能调优 线程池类型，可选：fixed/cached 2.0.5以上版本
+      threads: 200            # 可选 性能调优 线程池类型，可选：fixed/cached 2.0.5以上版本
     
   redis: 
     host: 127.0.0.1

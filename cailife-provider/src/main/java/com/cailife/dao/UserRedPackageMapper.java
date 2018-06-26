@@ -28,5 +28,5 @@ public interface UserRedPackageMapper {
 
     int updateByPrimaryKey(UserRedPackage record);
     
-    int batchInsertUserRedPack(List<UserRedPackage> userRedPackageList);
+    int batchInsertUserRedPack(@Param("userRedPackList") List<UserRedPackage> userRedPackList);
 }

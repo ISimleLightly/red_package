@@ -8,12 +8,27 @@
 <body>
     <div class="container">
         <a href="javascript:grab();">测试红包</a>
+        <a href="javascript:grabByRedis();">测试红包(redis)</a>
     </div>
 <script type="text/javascript">
 	function grab() {
 		for(var i = 0; i < 30000; i ++) {
 	        $.ajax({
 	            url: "http://localhost:8081/redPackage/grab",
+	            type: "post",
+	            dataType: "json",
+	            data: {
+	                "redPackageId": "dafecd3e-c963-4734-8e49-be99559d7178",
+	                "userId": i
+	            }
+	        })
+	    }
+	}
+	
+	function grabByRedis() {
+		for(var i = 0; i < 80000; i ++) {
+	        $.ajax({
+	            url: "http://localhost:8081/redPackage/grab/redis",
 	            type: "post",
 	            dataType: "json",
 	            data: {

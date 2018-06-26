@@ -27,4 +27,15 @@ public class RedPackageController {
 			return null;
 		}
 	}
+	
+	@RequestMapping("grab/redis")
+	@ResponseBody
+	public Map grabRedPackageByRedis(String redPackageId, String userId) {
+		try {
+			Map<String, String> map = redPackageService.grabRedPackageByRedis(redPackageId, userId);
+			return map;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }
