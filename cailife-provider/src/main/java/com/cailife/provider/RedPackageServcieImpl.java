@@ -130,21 +130,32 @@ public class RedPackageServcieImpl implements RedPackageService {
 	public Map grabRedPackageByRedis(String redPackageId, String userId) {
 		Map resultMap = new HashMap<>();
 		//Lua脚本，原子性
-		String script = "local listkey = 'redPack:redPackageList_'..KEYS[1] \n" +
+		String script = "redis.replicate_commands() \n" +
+						"local listkey = 'redPack:redPackageList_'..KEYS[1] \n" +
+						"local a=redis.call('TIME') \n" +
+						"local time = a[1]*1000000+a[2] \n" +
 						"local redPackage = 'redPack:redPackage_'..KEYS[1] \n" +
 						"local stock = tonumber(redis.call('hget',redPackage,'stock')) \n" +
 						"local remainMoney = tonumber(redis.call('hget',redPackage,'remainMoney')) \n" +
+						"local min = 0.01 \n" +
+						"local max = remainMoney / stock * 2 \n" +
+						"math.randomseed(tonumber(time)) \n" +
+						"local money = max * math.random()" +
 						"if stock<=0 then \n" +
 						"return 0 end \n" +
+						"if stock==1 then money= math.floor((remainMoney * 100) + 0.5) / 100 \n" +
+						"elseif (money<=0.01) then money = 0.01 \n" +
+						"else money = math.floor(money * 100) / 100 end \n" +
+						"remainMoney = remainMoney - money \n" +
 						"stock = stock - 1 \n" +
-						"remainMoney = remainMoney - ARGV[2] \n" +
+						//"remainMoney = remainMoney - ARGV[2] \n" +
 						"redis.call('hset',redPackage,'stock',tostring(stock)) \n" + 
 						"redis.call('hset',redPackage,'remainMoney',tostring(remainMoney)) \n" + 
-						"redis.call('rpush',listkey,ARGV[1]) \n" +
+						"redis.call('rpush',listkey,ARGV[1]..'-'..tostring(money)) \n" +
 						"if stock==0 then \n" + 
 						"return 2 end \n" +
 						"return 1 \n";
-		HashOperations<String, Object, Object> opsForHash = redisTemplate.opsForHash();
+		/*HashOperations<String, Object, Object> opsForHash = redisTemplate.opsForHash();
 		int remainSize = Integer.parseInt((String) opsForHash.get("redPack:redPackage_" + redPackageId, "stock"));
 		double remainMoney = Double.parseDouble((String) opsForHash.get("redPack:redPackage_" + redPackageId, "remainMoney"));
 		if (remainMoney <= 0) {
@@ -152,12 +163,12 @@ public class RedPackageServcieImpl implements RedPackageService {
 		}
 		LeftMoneyPackage leftMoneyPackage = new LeftMoneyPackage(remainSize, remainMoney);
 		double randomMoney = getRandomMoney(leftMoneyPackage);
-		String grabMoney = String.valueOf(randomMoney);
+		String grabMoney = String.valueOf(randomMoney);*/
 		List<String> keys = new ArrayList<>();
 		keys.add(redPackageId);
 		String args [] = new String[2];
-		args[0] = userId + "-" + System.currentTimeMillis() + "-" + grabMoney;
-		args[1] = grabMoney;
+		args[0] = userId + "-" + System.currentTimeMillis() ;
+		//args[1] = grabMoney;
 		try {
 			//Object object = redisTemplate.opsForHash().get("redPackage_dafecd3e-c963-4734-8e49-be99559d7178", "stock");
 			DefaultRedisScript<Long> defaultRedisScript = new DefaultRedisScript<>(script,Long.class);
