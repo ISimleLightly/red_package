@@ -9,8 +9,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.BoundListOperations;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,6 +33,7 @@ import com.cailife.pojo.RedPackage;
 import com.cailife.pojo.RedPackageExample;
 import com.cailife.pojo.UserRedPackage;
 import com.cailife.service.RedPackageService;
+import com.cailife.timers.RetrieveRedPackageTimer;
 
 import ch.qos.logback.classic.Logger;
 
@@ -38,10 +46,16 @@ public class RedPackageServcieImpl implements RedPackageService {
 	@Autowired
 	private UserRedPackageMapper userRedPackageMapper;
 	
+	/**
+     * 注入任务调度器
+     */
+    @Autowired @Qualifier("Scheduler")
+    private Scheduler scheduler;
+	
 	@Autowired
 	private RedisTemplate<String,String> redisTemplate;
 	
-	private final Logger logger = (Logger) LoggerFactory.getLogger(RedPackageServcieImpl.class);
+	private final static Logger logger = (Logger) LoggerFactory.getLogger(RedPackageServcieImpl.class);
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
@@ -209,6 +223,57 @@ public class RedPackageServcieImpl implements RedPackageService {
 	    /*_leftMoneyPackage.setRemainSize(_leftMoneyPackage.getRemainSize() - 1);
 	    _leftMoneyPackage.setRemainMoney(_leftMoneyPackage.getRemainMoney() - money);*/
 	    return money;
+	}
+
+	@Override
+	public Map sendRedPackage(String userId, Double amount, int number) {
+		Map result = new HashMap<>();
+		String redPackageId = UUID.randomUUID().toString();
+		try {
+			RedPackage redPackage = new RedPackage();
+			redPackage.setId(redPackageId);
+			redPackage.setAmount(amount);
+			redPackage.setStock(number);
+			redPackage.setCreated(new Date());
+			int insert = redPackageMapper.insert(redPackage);
+			if (insert <= 0) {
+				result.put("code", "1");
+				result.put("msg", "红包发送失败");
+				return result;
+			}
+			//存入缓存
+			HashOperations<String, Object, Object> opsForHash = redisTemplate.opsForHash();
+			opsForHash.put("redPack:redPackage_" + redPackageId, "stock", String.valueOf(number));
+			opsForHash.put("redPack:redPackage_" + redPackageId, "remainMoney", String.valueOf(amount));
+			buildRetrieveRedPackageTimer(redPackageId);
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			result.put("code", "1");
+			result.put("msg", "内部服务器异常");
+			return result;
+		}
+		result.put("code", "0");
+		result.put("msg", "红包发送成功");
+		return result;
+	}
+
+	@Override
+	public void updateRedPackageById(String redPackageId) {
+		RedPackage redPackage = new RedPackage();
+		redPackage.setId(redPackageId);
+		redPackage.setVersion(-1);
+		redPackageMapper.updateByPrimaryKeySelective(redPackage);
+	}
+	
+	private void buildRetrieveRedPackageTimer(String redPackageId) throws SchedulerException {
+		long startTime = System.currentTimeMillis() + 60 * 1000;
+		String name = UUID.randomUUID().toString();
+		String group = RetrieveRedPackageTimer.class.getName();
+		JobDetail jobDetail = JobBuilder.newJob(RetrieveRedPackageTimer.class).withIdentity(name, group).build();
+		jobDetail.getJobDataMap().put("redPackageId", redPackageId);
+		Trigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group).startAt(new Date(startTime)).build();
+		scheduler.scheduleJob(jobDetail, trigger);
 	}
 
 

@@ -7,8 +7,9 @@
 </head>
 <body>
     <div class="container">
-        <a href="javascript:grab();">测试红包</a>
-        <a href="javascript:grabByRedis();">测试红包(redis)</a>
+    	<a href="javascript:send();">发红包</a>
+        <a href="javascript:grab();">测试抢红包</a>
+        <a href="javascript:grabByRedis();">测试抢红包(redis)</a>
     </div>
 <script type="text/javascript">
 	function grab() {
@@ -37,6 +38,24 @@
 	            }
 	        })
 	    }
+	}
+	
+	function send() {
+		$.ajax({
+			url: "http://localhost:8081/redPackage/send",
+			type: "post",
+			dataType: "json",
+			data: {
+				"userId": "test",
+				"amount": 100,
+				"number": 10
+			},
+			success: function(data) {
+				if (data.code == 0) {
+					alert(data.msg);
+				}
+			}
+		})
 	}
 </script>
 </body>

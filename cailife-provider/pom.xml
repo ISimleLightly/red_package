@@ -85,7 +85,6 @@
           <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         
-        <!-- https://mvnrepository.com/artifact/com.gitee.reger/spring-boot-starter-dubbo -->
 		<dependency>
 		    <groupId>com.gitee.reger</groupId>
 		    <artifactId>spring-boot-starter-dubbo</artifactId>
@@ -99,11 +98,19 @@
 		    <version>1.2.5</version>
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+		<!-- quartz -->
+		<dependency>  
+            <groupId>org.quartz-scheduler</groupId>  
+            <artifactId>quartz</artifactId>  
+        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/com.mchange/c3p0 -->
 		<dependency>
-		    <groupId>redis.clients</groupId>
-		    <artifactId>jedis</artifactId>
-		    </dependency>
+		    <groupId>com.mchange</groupId>
+		    <artifactId>c3p0</artifactId>
+		    <version>0.9.5.2</version>
+		</dependency>
+          
 		
     </dependencies>
 

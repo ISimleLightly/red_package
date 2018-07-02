@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>job</title>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+</head>
+<body>
+	<form action="http://localhost:8081/job/add" method="post" id="form">
+		<div>
+			<dl>
+				<dd>类名：</dd>
+				<dd><input type="text" name="jobClassName" /></dd>
+			</dl>
+			<dl>
+				<dd>组名：</dd>
+				<dd><input type="text" name="jobGroup" /></dd>
+			</dl>
+			<dl>
+				<dd>cron表达式：</dd>
+				<dd><input type="text" name="cronExpression" /></dd>
+			</dl>
+		</div>
+	</form>
+	
+	<div>
+		<button type="button" onclick="submit()">提交</button>
+	</div>
+</body>
+<script type="text/javascript">
+	function submit() {
+		$("#form").submit();
+	}
+</script>
+</html>

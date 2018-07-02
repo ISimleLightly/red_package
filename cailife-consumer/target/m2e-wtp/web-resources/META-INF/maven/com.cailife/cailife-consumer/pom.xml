@@ -61,13 +61,11 @@
             <version>1.1.1</version>
         </dependency>
 
-         
-         <!--zookeeper依赖-->
-        <!-- <dependency>
-            <groupId>org.apache.zookeeper</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>3.4.8</version>
-        </dependency> -->
+        <!-- quartz -->
+		<dependency>  
+            <groupId>org.quartz-scheduler</groupId>  
+            <artifactId>quartz</artifactId>  
+        </dependency>
         
     </dependencies>
 

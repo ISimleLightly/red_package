@@ -38,4 +38,11 @@ public class RedPackageController {
 			return null;
 		}
 	}
+	
+	@RequestMapping("send")
+	@ResponseBody
+	public Map sendRedPackage(String userId, Double amount, int number) {
+		Map result = redPackageService.sendRedPackage(userId, amount, number);
+		return result;
+	}
 }
