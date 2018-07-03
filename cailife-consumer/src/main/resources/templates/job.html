@@ -10,11 +10,11 @@
 		<div>
 			<dl>
 				<dd>类名：</dd>
-				<dd><input type="text" name="jobClassName" /></dd>
+				<dd><input type="text" name="jobClassName" value=""/></dd>
 			</dl>
 			<dl>
 				<dd>组名：</dd>
-				<dd><input type="text" name="jobGroup" /></dd>
+				<dd><input type="text" name="jobGroup" value=""/></dd>
 			</dl>
 			<dl>
 				<dd>cron表达式：</dd>
@@ -23,13 +23,49 @@
 		</div>
 	</form>
 	
-	<div>
+	<div style="margin-left: 20px">
 		<button type="button" onclick="submit()">提交</button>
+		<button type="button" onclick="pause()">停止</button>
+		<button type="button" onclick="resume()">恢复</button>
 	</div>
 </body>
 <script type="text/javascript">
 	function submit() {
 		$("#form").submit();
+	}
+
+	function pause() {
+	    $.ajax({
+			url: "http://localhost:8081/job/pause",
+			type: "post",
+			dataType: "json",
+			data: {
+                "jobClassName": $("input[name='jobClassName']").val(),
+				"jobGroup": $("input[name='jobGroup']").val()
+			},
+			success: function(data) {
+			    if (data.code == 0) {
+			        alert(data.msg);
+				}
+			}
+		})
+	}
+
+	function resume() {
+	    $.ajax({
+			url: "http://localhost:8081/job/resume",
+			type: "post",
+			dataType: "json",
+			data: {
+                "jobClassName": $("input[name='jobClassName']").val(),
+				"jobGroup": $("input[name='jobGroup']").val()
+			},
+			success: function(data) {
+			    if (data.code == 0) {
+			        alert(data.msg);
+				}
+			}
+		})
 	}
 </script>
 </html>

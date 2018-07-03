@@ -101,7 +101,7 @@ public class RedPackageServcieImpl implements RedPackageService {
 	
 	@SuppressWarnings("rawtypes")
 	@Async
-	private void saveUserPackageFromRedis(String redPackageId, Double unitMoney) throws Exception {
+	protected void saveUserPackageFromRedis(String redPackageId, Double unitMoney) throws Exception {
 		long start = System.currentTimeMillis();
 		//每次最多获取1000条记录
 		final int TIME_SIZE = 1000;
@@ -143,7 +143,7 @@ public class RedPackageServcieImpl implements RedPackageService {
 	@SuppressWarnings("unchecked")
 	public Map grabRedPackageByRedis(String redPackageId, String userId) {
 		Map resultMap = new HashMap<>();
-		//Lua脚本，原子性
+		//Lua脚本，保证原子性，高并发情况下不会出现超发现象
 		String script = "redis.replicate_commands() \n" +
 						"local listkey = 'redPack:redPackageList_'..KEYS[1] \n" +
 						"local a=redis.call('TIME') \n" +
@@ -193,7 +193,8 @@ public class RedPackageServcieImpl implements RedPackageService {
 				return resultMap;
 			}
 			if (result == 2) {
-				String unitAmount = (String) redisTemplate.opsForHash().get("redPack:redPackage_" + redPackageId, "unitMoney");
+				String unitAmount = (String) redisTemplate.opsForHash()
+						.get("redPack:redPackage_" + redPackageId, "unitMoney");
 				double unitMoney = Double.parseDouble(unitAmount);
 				saveUserPackageFromRedis(redPackageId, unitMoney);
 			}

@@ -1,5 +1,6 @@
 package com.cailife.consumer.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,28 @@ public class JobController {
 	@RequestMapping("add")
 	@ResponseBody
 	public Map addJob(QuartzEntity quartz) {
-		Map addJob = jobService.addJob(quartz);
-		return addJob;
+		Map map = new HashMap<> ();
+		if (quartz != null) {
+			map = jobService.addJob(quartz);
+		}
+		return map;
+	}
+
+	@RequestMapping("pause")
+	@ResponseBody
+	public Map pause(QuartzEntity quartzEntity) {
+		Map map = new HashMap<> ();
+		if (quartzEntity != null) {
+			map = jobService.pauseJob(quartzEntity);
+		}
+		return map;
+	}
+
+	@RequestMapping("resume")
+	@ResponseBody
+	public Map resume(QuartzEntity quartzEntity) {
+		Map map = new HashMap<> ();
+		if (quartzEntity != null) map = jobService.resumeJob(quartzEntity);
+		return map;
 	}
 }

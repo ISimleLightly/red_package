@@ -25,7 +25,7 @@ spring:
       serialization: hessian2
     
   thymeleaf:
-      cache: true
+      cache: false
       prefix: classpath:/templates/
       suffix: .html
       mode: HTML
