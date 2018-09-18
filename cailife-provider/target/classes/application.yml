@@ -40,10 +40,11 @@ spring:
     protocol:               # 默认的应用协议栈
       name: dubbo           # 必填 性能调优 协议名称 2.0.5以上版本
       serialization: hessian2
+      port: 8988            # 可选 服务发现 不输入或者输入0，将自动在53600~53688之间生产一个  服务端口  2.0.5以上版本
     provider: 
       timeout: 1200000
-      threadpool: fixed       # 可选 性能调优 线程池类型，可选：fixed/cached 2.0.5以上版本
-      threads: 200            # 可选 性能调优 线程池类型，可选：fixed/cached 2.0.5以上版本
+      threadpool: fixed     # 可选 性能调优 线程池类型，可选：fixed/cached 2.0.5以上版本
+      threads: 200          # 可选 性能调优 线程池类型，可选：fixed/cached 2.0.5以上版本
     
   redis: 
     host: 127.0.0.1
@@ -53,3 +54,19 @@ spring:
     
   cache :
     type: redis
+
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: test-consumer-group
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
